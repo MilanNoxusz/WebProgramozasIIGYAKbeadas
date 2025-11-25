@@ -1,16 +1,94 @@
 <%- include('header') %>
-    <div class="card border-danger">
-        <div class="card-header bg-danger text-white">ADMIN FELÜLET</div>
-        <div class="card-body">
-            <h4>Regisztrált felhasználók listája:</h4>
-            <ul class="list-group">
-                <% users.forEach(function(user) { %>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <%= user.username %> 
-                        <% if(user.isAdmin) { %> <span class="badge badge-danger">Admin</span> <% } %>
-                    </li>
-                <% }); %>
-            </ul>
+    <div class="container mt-4">
+        <div class="card border-danger mb-5">
+            <div class="card-header bg-danger text-white">ADMIN FELÜLET - Felhasználók</div>
+            <div class="card-body">
+                <h4>Regisztrált felhasználók listája:</h4>
+                <ul class="list-group">
+                    <% users.forEach(function(user) { %>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <%= user.username %> 
+                            <% if(user.isAdmin) { %> <span class="badge badge-danger">Admin</span> <% } %>
+                        </li>
+                    <% }); %>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card border-primary">
+            <div class="card-header bg-primary text-white font-weight-bold">RENDELÉSEK KEZELÉSE (CRUD)</div>
+            <div class="card-body">
+                
+                <h5 class="mb-3">Új rendelés felvétele:</h5>
+                <form action="<%= appPath %>/admin/rendeles/add" method="POST" class="p-3 bg-light border rounded mb-4">
+                    <div class="form-row">
+                        <div class="col-md-3 mb-2">
+                            <label>Pizzanév:</label>
+                            <select name="pizzanev" class="form-control">
+                                <% pizzas.forEach(function(p) { %>
+                                    <option value="<%= p.nev %>"><%= p.nev %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <label>Darab:</label>
+                            <input type="number" name="darab" class="form-control" value="1" min="1" required>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <label>Felvétel ideje:</label>
+                            <input type="text" name="felvetel" class="form-control" placeholder="ÉÉÉÉ-HH-NN ÓÓ:PP:MP">
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <label>Kiszállítás ideje:</label>
+                            <input type="text" name="kiszallitas" class="form-control" placeholder="ÉÉÉÉ-HH-NN ÓÓ:PP:MP">
+                        </div>
+                        <div class="col-md-1 mb-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-success btn-block">Mentés</button>
+                        </div>
+                    </div>
+                    <small class="text-muted">Dátum formátum pl: 2024-01-01 18:30:00</small>
+                </form>
+
+                <h5>Rendelések listája:</h5>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover table-bordered">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Pizza Név</th>
+                                <th>Darab</th>
+                                <th>Felvétel</th>
+                                <th>Kiszállítás</th>
+                                <th class="text-center" style="width: 150px;">Műveletek</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if(orders.length > 0) { %>
+                                <% orders.forEach(function(order) { %>
+                                    <tr>
+                                        <td><%= order.id %></td>
+                                        <td><%= order.pizzanev %></td>
+                                        <td><%= order.darab %></td>
+                                        <td><%= order.felvetel %></td>
+                                        <td><%= order.kiszallitas %></td>
+                                        <td class="text-center">
+                                            <a href="<%= appPath %>/admin/rendeles/edit/<%= order.id %>" class="btn btn-sm btn-warning text-white">Szerkesztés</a>
+                                            <form action="<%= appPath %>/admin/rendeles/delete/<%= order.id %>" method="POST" style="display:inline; margin-left: 5px;" onsubmit="return confirm('Biztosan törölni szeretnéd?');">
+                                                <button type="submit" class="btn btn-sm btn-danger">Törlés</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">Nincs rendelés az adatbázisban.</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
         </div>
     </div>
 <%- include('footer') %>

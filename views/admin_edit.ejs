@@ -1,0 +1,51 @@
+<%- include('header') %>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h3 class="mb-0">Rendelés Szerkesztése (ID: <%= order.id %>)</h3>
+                </div>
+                <div class="card-body">
+                    <form action="<%= appPath %>/admin/rendeles/update/<%= order.id %>" method="POST">
+                        
+                        <div class="form-group">
+                            <label for="pizzanev">Pizza Név:</label>
+                            <select class="form-control" id="pizzanev" name="pizzanev">
+                                <% pizzas.forEach(function(p) { %>
+                                    <option value="<%= p.nev %>" <%= order.pizzanev === p.nev ? 'selected' : '' %>>
+                                        <%= p.nev %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="darab">Darab:</label>
+                            <input type="number" class="form-control" id="darab" name="darab" value="<%= order.darab %>" min="1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="felvetel">Felvétel ideje:</label>
+                            <input type="text" class="form-control" id="felvetel" name="felvetel" value="<%= order.felvetel %>" placeholder="ÉÉÉÉ-HH-NN ÓÓ:PP:MP">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="kiszallitas">Kiszállítás ideje:</label>
+                            <input type="text" class="form-control" id="kiszallitas" name="kiszallitas" value="<%= order.kiszallitas %>" placeholder="ÉÉÉÉ-HH-NN ÓÓ:PP:MP">
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-success">Módosítások Mentése</button>
+                            <a href="<%= appPath %>/admin" class="btn btn-secondary">Mégse</a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('footer') %>

@@ -121,7 +121,7 @@ app.get('/offers', (req, res) => {
 
         // 2. Lekérdezés: Utolsó 5 rendelés
         const sqlOrders = `SELECT * FROM rendeles ORDER BY id DESC LIMIT 5`;
-        
+
         connection.query(sqlOrders, (err2, orderResults) => {
             if (err2) {
                 console.error("Hiba a rendelések lekérdezésekor:", err2);
@@ -136,34 +136,24 @@ app.get('/offers', (req, res) => {
         });
     });
 });
-
 app.post('/messages', checkAuth, (req, res) => {
-    // A felhasználó neve a session-ből jön (Passport)
     const username = req.user.username;
-    // Az üzenet szövege az űrlapból
     const message = req.body.message;
-
     const sql = "INSERT INTO messages (username, message) VALUES (?, ?)";
 
     connection.query(sql, [username, message], (err) => {
         if (err) console.log("Hiba az üzenet mentésekor:", err);
-
-        // Visszairányítjuk az oldalra, hogy lássa az új üzenetet
         res.redirect(APP_PATH + '/messages');
     });
 });
 
 app.get('/messages', checkAuth, (req, res) => {
-    // Lekérjük az üzeneteket, a legújabbal kezdve
     const sql = "SELECT * FROM messages ORDER BY created_at DESC";
-
     connection.query(sql, (err, results) => {
         if (err) {
             console.log("Hiba az üzenetek betöltésekor:", err);
-            results = []; // Ha hiba van, üres listát adunk
+            results = []; 
         }
-
-        // Rendereljük az oldalt, átadva az üzeneteket
         res.render('messages', { messages: results });
     });
 });
@@ -197,13 +187,82 @@ app.get('/logout', (req, res, next) => {
     });
 });
 
-app.get('/messages', checkAuth, (req, res) => {
-    res.render('messages');
+// --- ADMIN ÉS CRUD (RENDELES TÁBLA: id, pizzanev, darab, felvetel, kiszallitas) ---
+
+// 1. READ: Admin felület betöltése
+app.get('/admin', checkAdmin, (req, res) => {
+    // Felhasználók listája
+    connection.query('SELECT * FROM users', (err, userResults) => {
+        if (err) console.log(err);
+        
+        // Rendelések lekérése
+        // Formázzuk a dátumokat stringgé az egyszerűség kedvéért, vagy kezeljük a kliens oldalon
+        const sqlOrders = 'SELECT * FROM rendeles ORDER BY id DESC';
+        connection.query(sqlOrders, (err2, orderResults) => {
+            if (err2) console.log(err2);
+
+            // Pizzák lekérése a lenyíló menühöz
+            connection.query('SELECT nev FROM pizza ORDER BY nev ASC', (err3, pizzaResults) => {
+                if (err3) console.log(err3);
+
+                res.render('admin', { 
+                    users: userResults, 
+                    orders: orderResults || [],
+                    pizzas: pizzaResults || []
+                });
+            });
+        });
+    });
 });
 
-app.get('/admin', checkAdmin, (req, res) => {
-    connection.query('SELECT * FROM users', (err, results) => {
-        res.render('admin', { users: results });
+// 2. CREATE: Új rendelés hozzáadása
+app.post('/admin/rendeles/add', checkAdmin, (req, res) => {
+    // Az űrlapról érkező adatok
+    const { pizzanev, darab, felvetel, kiszallitas } = req.body;
+
+    const sql = "INSERT INTO rendeles (pizzanev, darab, felvetel, kiszallitas) VALUES (?, ?, ?, ?)";
+    connection.query(sql, [pizzanev, darab, felvetel, kiszallitas], (err) => {
+        if (err) console.error("Hiba a rendelés mentésekor:", err);
+        res.redirect(APP_PATH + '/admin');
+    });
+});
+
+// 3. UPDATE (Form): Szerkesztő oldal betöltése
+app.get('/admin/rendeles/edit/:id', checkAdmin, (req, res) => {
+    const id = req.params.id;
+    
+    connection.query('SELECT * FROM rendeles WHERE id = ?', [id], (err, orderResult) => {
+        if (err || orderResult.length === 0) {
+            return res.redirect(APP_PATH + '/admin');
+        }
+
+        connection.query('SELECT nev FROM pizza ORDER BY nev ASC', (err2, pizzaResults) => {
+            res.render('admin_edit', { 
+                order: orderResult[0], 
+                pizzas: pizzaResults 
+            });
+        });
+    });
+});
+
+// 3. UPDATE (Action): Adatok frissítése
+app.post('/admin/rendeles/update/:id', checkAdmin, (req, res) => {
+    const id = req.params.id;
+    const { pizzanev, darab, felvetel, kiszallitas } = req.body;
+
+    const sql = "UPDATE rendeles SET pizzanev = ?, darab = ?, felvetel = ?, kiszallitas = ? WHERE id = ?";
+    connection.query(sql, [pizzanev, darab, felvetel, kiszallitas, id], (err) => {
+        if (err) console.error("Hiba a frissítéskor:", err);
+        res.redirect(APP_PATH + '/admin');
+    });
+});
+
+// 4. DELETE: Rendelés törlése
+app.post('/admin/rendeles/delete/:id', checkAdmin, (req, res) => {
+    const id = req.params.id;
+    connection.query('DELETE FROM rendeles WHERE id = ?', [id], (err) => {
+        if (err) console.log("Hiba a törléskor:", err);
+        res.redirect(APP_PATH + '/admin');
     });
 });
 
@@ -212,4 +271,3 @@ app.listen(PORT, () => {
     console.log(`A szerver fut a ${PORT}-es porton.`);
     console.log(`Elérhető : http://143.47.98.96${APP_PATH}`);
 });
-
