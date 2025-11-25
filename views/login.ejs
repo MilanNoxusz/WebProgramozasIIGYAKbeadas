@@ -1,14 +1,112 @@
 <%- include('header') %>
-<div class="container mt-5"> <h2>Bejelentkezés</h2>
-    <form action="<%= appPath %>/login" method="POST" style="max-width: 400px;">
-        <div class="form-group">
-            <label>Felhasználónév:</label>
-            <input type="text" name="username" class="form-control" required>
+
+<style>
+    .auth-section {
+        /* A főoldal háttérképe */
+        background: url('<%= appPath %>/images/hero-bg.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        min-height: 85vh; /* Majdnem teljes képernyő */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    /* Sötétítés a háttérképen, hogy olvasható legyen a szöveg */
+    .auth-overlay {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background-color: rgba(0, 0, 0, 0.6); /* 60% fekete áttetszőség */
+        z-index: 1;
+    }
+
+    .login-box {
+        position: relative;
+        z-index: 2; /* Hogy a sötétítés fölött legyen */
+        background-color: rgba(255, 255, 255, 0.95); /* Majdnem fehér, picit áttetsző */
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 15px 25px rgba(0,0,0,0.5);
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+    }
+
+    .login-box h2 {
+        font-family: 'Dancing Script', cursive; /* Feane betűtípus */
+        color: #222831;
+        margin-bottom: 30px;
+        font-weight: bold;
+    }
+
+    .custom-input {
+        border-radius: 25px;
+        padding: 12px 20px;
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+        background: #f9f9f9;
+    }
+
+    .btn-login {
+        background-color: #ffbe33;
+        border: none;
+        border-radius: 25px;
+        padding: 12px 0;
+        color: white;
+        font-weight: bold;
+        width: 100%;
+        transition: all 0.3s;
+        text-transform: uppercase;
+    }
+
+    .btn-login:hover {
+        background-color: #e69c00;
+        transform: translateY(-2px);
+    }
+
+    .icon-circle {
+        width: 80px;
+        height: 80px;
+        background-color: #222831;
+        color: #ffbe33;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px auto;
+        font-size: 32px;
+    }
+</style>
+
+<section class="auth-section">
+    <div class="auth-overlay"></div>
+    
+    <div class="login-box">
+        <div class="icon-circle">
+            <i class="fa fa-user"></i>
         </div>
-        <div class="form-group">
-            <label>Jelszó:</label>
-            <input type="password" name="password" class="form-control" required>
+
+        <h2>Bejelentkezés</h2>
+        
+        <form action="<%= appPath %>/login" method="POST">
+            <div class="form-group">
+                <input type="text" name="username" class="form-control custom-input" placeholder="Felhasználónév" required>
+            </div>
+            <div class="form-group">
+                <input type="password" name="password" class="form-control custom-input" placeholder="Jelszó" required>
+            </div>
+            
+            <button type="submit" class="btn btn-login">
+                Belépés
+            </button>
+        </form>
+
+        <div class="mt-4">
+            <p>Még nincs fiókod? <a href="<%= appPath %>/register" style="color: #ffbe33; font-weight: bold;">Regisztrálj itt!</a></p>
         </div>
-        <button type="submit" class="btn btn-success">Belépés</button>
-    </form>
-</div> <%- include('footer') %>
+    </div>
+</section>
+
+<%- include('footer') %>
