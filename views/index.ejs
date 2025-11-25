@@ -1,13 +1,76 @@
 <%- include('header') %>
-    <div class="jumbotron">
-        <h1>Üdvözöllek az oldalon!</h1>
-        <p>Ez a nyilvános felület, amit mindenki lát.</p>
-        
-        <% if (!isAuthenticated) { %>
-            <p>Kérlek jelentkezz be a további funkciókhoz!</p>
-            <a href="<%= appPath %>/login" class="btn btn-primary">Belépés</a>
-        <% } else { %>
-            <p>Örülünk, hogy újra itt vagy!</p>
-        <% } %>
+
+<div class="hero_area" style="min-height: 80vh;"> 
+  <div class="bg-box">
+    <img src="<%= appPath %>/images/hero-bg.jpg" alt="">
+  </div>
+  
+  <section class="slider_section">
+    <div id="customCarousel1" class="carousel slide" data-ride="carousel">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-7 col-lg-6">
+                <div class="detail-box">
+                  <h1>
+                    Dante Pizzériája
+                  </h1>
+                  <p class="lead" style="font-size: 1.25rem;">
+                    Üdvözöllek a pokolian jó ízek birodalmában! Dante, a tulajdonos garantálja, 
+                    hogy minden falatban érezni fogod a törődést és a friss, olasz alapanyagokat. 
+                    Kóstold meg a város legjobb pizzáját, egyenesen a kemencéből!
+                  </p>
+                  <div class="btn-box">
+                    <% if (isAuthenticated) { %>
+                        <a href="<%= appPath %>/messages" class="btn1">
+                          Rendelés leadása
+                        </a>
+                    <% } else { %>
+                        <a href="<%= appPath %>/login" class="btn1">
+                          Jelentkezz be a rendeléshez
+                        </a>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </section>
+</div>
+
+<section class="about_section layout_padding">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="img-box">
+          <img src="<%= appPath %>/images/about-img.png" alt="">
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="detail-box">
+          <div class="heading_container">
+            <h2>
+              Dante Története
+            </h2>
+          </div>
+          <p class="lead" style="font-size: 1.15rem;">
+            Minden egy kis olasz faluban kezdődött, ahol Dante nagymamájától elleste a tökéletes tészta receptjét. 
+            Évekkel később, sok utazás és kóstolás után megnyitotta saját pizzériáját, hogy megossza ezt az élményt veled. 
+            Nálunk a tradíció találkozik a modern ízekkel.
+          </p>
+          <% if (!isAuthenticated) { %>
+            <a href="<%= appPath %>/register">
+              Csatlakozz a törzsvendégekhez!
+            </a>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <%- include('footer') %>
