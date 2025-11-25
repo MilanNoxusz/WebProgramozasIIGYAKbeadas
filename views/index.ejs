@@ -5,7 +5,7 @@
         
         <% if (!isAuthenticated) { %>
             <p>Kérlek jelentkezz be a további funkciókhoz!</p>
-            <a href="/login" class="btn btn-primary">Belépés</a>
+            <a href="<%= appPath %>/login" class="btn btn-primary">Belépés</a>
         <% } else { %>
             <p>Örülünk, hogy újra itt vagy!</p>
         <% } %>

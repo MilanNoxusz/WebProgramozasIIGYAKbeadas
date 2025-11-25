@@ -1,6 +1,6 @@
 <%- include('header') %>
     <h2>Regisztráció</h2>
-    <form action="/register" method="POST" style="max-width: 400px;">
+    <form action="<%= appPath %>/register" method="POST" style="max-width: 400px;">
         <div class="form-group">
             <label>Felhasználónév:</label>
             <input type="text" name="username" class="form-control" required>
