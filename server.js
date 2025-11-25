@@ -29,6 +29,7 @@ app.use((req, res, next) => {
         req.url = req.url.slice(APP_PATH.length) || '/';
     }
     res.locals.appPath = APP_PATH;
+    res.locals.currentRoute = req.path;
     next();
 });
 

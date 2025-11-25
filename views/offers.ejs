@@ -1,5 +1,28 @@
 <%- include('header') %>
 
+<style>
+    .food_section .box .img-box {
+        height: 150px; 
+        width: 100%;
+        border-radius: 15px 15px 0 0; 
+        overflow: hidden; 
+        padding: 0; 
+        margin: 0;
+        background: #f1f2f3; 
+    }
+
+    .food_section .box .img-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; 
+        border-radius: 15px 15px 0 0;
+        transition: all 0.3s; 
+    }
+
+    .food_section .box:hover .img-box img {
+        transform: scale(1.1);
+    }
+</style>
 <section class="food_section layout_padding">
   <div class="container">
     
@@ -10,19 +33,28 @@
       <p>
         Válogatás a kemence legjavából, egyenesen az asztalodra
       </p>
+      
+      <div style="margin-top: 20px;">
+        <a href="<%= appPath %>/offers" class="btn btn-warning" style="color: white; font-weight: bold; border-radius: 25px; padding: 10px 25px;">
+            <i class="fa fa-refresh" aria-hidden="true"></i> Másikat kérek!
+        </a>
+      </div>
     </div>
 
-    <div class="filters-content">
+    <div class="filters-content" style="margin-top: 40px;">
       <div class="row grid">
         
         <% pizzas.forEach(function(pizza) { %>
           <div class="col-sm-6 col-lg-4 all">
             <div class="box">
               <div>
-                <div class="img-box" style="background: #f1f2f3; display: flex; align-items: center; justify-content: center; border-radius: 15px 15px 0 0; height: 175px;">
-                   <i class="fa fa-cutlery fa-4x" style="color: #ffbe33;"></i>
+                <div class="img-box">
+                   <% if(pizza.vegetarianus) { %>
+                       <img src="<%= appPath %>/images/pizza-vega.jpg" alt="Vega Pizza" style="width: 100%; height: 100%; object-fit: cover;">
+                   <% } else { %>
+                       <img src="<%= appPath %>/images/pizza-meat.jpg" alt="Húsos Pizza" style="width: 100%; height: 100%; object-fit: cover;">
+                   <% } %>
                 </div>
-                
                 <div class="detail-box">
                   <h5>
                     <%= pizza.nev %>
@@ -86,4 +118,5 @@
 
   </div>
 </section>
+
 <%- include('footer') %>
