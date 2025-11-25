@@ -11,7 +11,7 @@ const bodyParser = require('body-parser');
 const app = express();
 
 const PORT = 4027; 
-const APP_PATH = '/app027'; 
+const APP_PATH = '/app027';
 
 const dbOptions = {
     host: 'localhost',
@@ -23,19 +23,16 @@ const connection = mysql.createConnection(dbOptions);
 
 app.set('view engine', 'ejs');
 
+// --- ÚTVONAL TISZTÍTÓ MIDDLEWARE ---
 app.use((req, res, next) => {
     if (req.url.startsWith(APP_PATH)) {
         req.url = req.url.slice(APP_PATH.length) || '/';
     }
-    
     res.locals.appPath = APP_PATH;
-    
     next();
 });
 
-// Statikus fájlok
 app.use(express.static(path.join(__dirname, 'public')));
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -82,14 +79,12 @@ passport.deserializeUser((id, done) => {
     connection.query('SELECT * FROM users WHERE id = ?', [id], (err, results) => done(err, results[0]));
 });
 
-// Middleware: user objektum átadása a nézeteknek
 app.use(function(req, res, next) {
     res.locals.isAuthenticated = req.isAuthenticated();
     res.locals.currentUser = req.user;
     next();
 });
 
-// Jogosultság ellenőrző függvények
 function checkAuth(req, res, next) {
     if (req.isAuthenticated()) return next();
     res.redirect(APP_PATH + '/login');
@@ -107,6 +102,40 @@ app.get('/', (req, res) => {
     res.render('index');
 });
 
+app.get('/offers', (req, res) => {
+    // 1. Lekérdezés: 6 random pizza árral együtt (JOIN)
+    const sqlPizzas = `
+        SELECT p.nev, p.kategorianev, p.vegetarianus, k.ar 
+        FROM pizza p 
+        JOIN kategoria k ON p.kategorianev = k.nev 
+        ORDER BY RAND() 
+        LIMIT 6
+    `;
+
+    connection.query(sqlPizzas, (err, pizzaResults) => {
+        if (err) {
+            console.error("Hiba a pizzák lekérdezésekor:", err);
+            return res.redirect(APP_PATH + '/');
+        }
+
+        // 2. Lekérdezés: Utolsó 5 rendelés
+        const sqlOrders = `SELECT * FROM rendeles ORDER BY id DESC LIMIT 5`;
+        
+        connection.query(sqlOrders, (err2, orderResults) => {
+            if (err2) {
+                console.error("Hiba a rendelések lekérdezésekor:", err2);
+                // Ha hiba van, akkor is megjelenítjük a pizzákat, csak rendelés nélkül
+                return res.render('offers', { pizzas: pizzaResults, orders: [] });
+            }
+
+            res.render('offers', { 
+                pizzas: pizzaResults, 
+                orders: orderResults 
+            });
+        });
+    });
+});
+
 app.get('/register', (req, res) => {
     res.render('register');
 });
@@ -116,7 +145,6 @@ app.post('/register', (req, res) => {
     connection.query('INSERT INTO users (username, hash, isAdmin) VALUES (?, ?, 0)', 
     [req.body.username, hash], function(err) {
         if (err) console.log(err);
-        // Siker esetén a login oldalra dobjuk (prefix-szel!)
         res.redirect(APP_PATH + '/login');
     });
 });

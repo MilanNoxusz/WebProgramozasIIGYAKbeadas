@@ -1,0 +1,89 @@
+<%- include('header') %>
+
+<section class="food_section layout_padding">
+  <div class="container">
+    
+    <div class="heading_container heading_center">
+      <h2>
+        Dante Ajánlata
+      </h2>
+      <p>
+        Válogatás a kemence legjavából, egyenesen az asztalodra
+      </p>
+    </div>
+
+    <div class="filters-content">
+      <div class="row grid">
+        
+        <% pizzas.forEach(function(pizza) { %>
+          <div class="col-sm-6 col-lg-4 all">
+            <div class="box">
+              <div>
+                <div class="img-box" style="background: #f1f2f3; display: flex; align-items: center; justify-content: center; border-radius: 15px 15px 0 0; height: 175px;">
+                   <i class="fa fa-cutlery fa-4x" style="color: #ffbe33;"></i>
+                </div>
+                
+                <div class="detail-box">
+                  <h5>
+                    <%= pizza.nev %>
+                  </h5>
+                  <p>
+                    <strong>Kategória:</strong> <%= pizza.kategorianev %> <br>
+                    <% if(pizza.vegetarianus) { %>
+                      <span class="badge badge-success" style="background-color: #28a745;">Vegetáriánus</span>
+                    <% } else { %>
+                       <span class="badge badge-secondary" style="background-color: #6c757d;">Húsos</span>
+                    <% } %>
+                  </p>
+                  
+                  <div class="options">
+                    <h6>
+                      <%= pizza.ar %> Ft
+                    </h6>
+                    <a href="<%= appPath %>/messages">
+                       <i class="fa fa-shopping-cart text-white"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+
+      </div>
+    </div>
+
+    <div class="heading_container heading_center" style="margin-top: 80px; margin-bottom: 30px;">
+       <h3>
+         Legutóbbi Rendelések
+       </h3>
+    </div>
+
+    <div class="table-responsive shadow-sm p-3 mb-5 bg-white rounded">
+        <table class="table table-hover">
+            <thead style="background-color: #222831; color: white;">
+                <tr>
+                    <th>#ID</th>
+                    <th>Pizza Neve</th>
+                    <th>Mennyiség</th>
+                    <th>Felvétel</th>
+                    <th>Kiszállítás</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% orders.forEach(function(order) { %>
+                    <tr>
+                        <td>#<%= order.id %></td>
+                        <td style="font-weight: bold; color: #222831;"><%= order.pizzanev %></td>
+                        <td><%= order.darab %> db</td>
+                        <td><%= new Date(order.felvetel).toLocaleTimeString('hu-HU', {hour: '2-digit', minute:'2-digit'}) %></td>
+                        <td><%= new Date(order.kiszallitas).toLocaleTimeString('hu-HU', {hour: '2-digit', minute:'2-digit'}) %></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+
+  </div>
+</section>
+<%- include('footer') %>
