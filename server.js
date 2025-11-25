@@ -187,17 +187,32 @@ app.get('/logout', (req, res, next) => {
     });
 });
 
-// --- ADMIN ÉS CRUD (RENDELES TÁBLA: id, pizzanev, darab, felvetel, kiszallitas) ---
-
-// 1. READ: Admin felület betöltése
 app.get('/admin', checkAdmin, (req, res) => {
+    // Rendezési paraméterek (default: id, DESC)
+    let sortCol = req.query.sort || 'id';
+    let sortDir = req.query.dir || 'DESC';
+
+    // Biztonsági ellenőrzés: csak létező oszlopok szerint rendezzünk
+    const allowedCols = ['id', 'pizzanev', 'darab', 'felvetel', 'kiszallitas'];
+    if (!allowedCols.includes(sortCol)) sortCol = 'id';
+    if (sortDir !== 'ASC' && sortDir !== 'DESC') sortDir = 'DESC';
+
     // Felhasználók listája
     connection.query('SELECT * FROM users', (err, userResults) => {
         if (err) console.log(err);
         
-        // Rendelések lekérése
-        // Formázzuk a dátumokat stringgé az egyszerűség kedvéért, vagy kezeljük a kliens oldalon
-        const sqlOrders = 'SELECT * FROM rendeles ORDER BY id DESC';
+        // Rendelések lekérése DATE_FORMAT használatával a szép megjelenésért
+        const sqlOrders = `
+            SELECT 
+                id, 
+                pizzanev, 
+                darab, 
+                DATE_FORMAT(felvetel, '%Y-%m-%d %H:%i:%s') as felvetel, 
+                DATE_FORMAT(kiszallitas, '%Y-%m-%d %H:%i:%s') as kiszallitas 
+            FROM rendeles 
+            ORDER BY ${sortCol} ${sortDir}
+        `;
+
         connection.query(sqlOrders, (err2, orderResults) => {
             if (err2) console.log(err2);
 
@@ -208,7 +223,9 @@ app.get('/admin', checkAdmin, (req, res) => {
                 res.render('admin', { 
                     users: userResults, 
                     orders: orderResults || [],
-                    pizzas: pizzaResults || []
+                    pizzas: pizzaResults || [],
+                    sortCol: sortCol, // Átadjuk a nézetnek, hogy tudjuk mi az aktív rendezés
+                    sortDir: sortDir
                 });
             });
         });
@@ -217,7 +234,6 @@ app.get('/admin', checkAdmin, (req, res) => {
 
 // 2. CREATE: Új rendelés hozzáadása
 app.post('/admin/rendeles/add', checkAdmin, (req, res) => {
-    // Az űrlapról érkező adatok
     const { pizzanev, darab, felvetel, kiszallitas } = req.body;
 
     const sql = "INSERT INTO rendeles (pizzanev, darab, felvetel, kiszallitas) VALUES (?, ?, ?, ?)";
@@ -231,7 +247,18 @@ app.post('/admin/rendeles/add', checkAdmin, (req, res) => {
 app.get('/admin/rendeles/edit/:id', checkAdmin, (req, res) => {
     const id = req.params.id;
     
-    connection.query('SELECT * FROM rendeles WHERE id = ?', [id], (err, orderResult) => {
+    // Itt is formázzuk a dátumot, hogy az input mezőben jól jelenjen meg (ha stringként kezeljük)
+    const sql = `
+        SELECT 
+            id, 
+            pizzanev, 
+            darab, 
+            DATE_FORMAT(felvetel, '%Y-%m-%d %H:%i:%s') as felvetel, 
+            DATE_FORMAT(kiszallitas, '%Y-%m-%d %H:%i:%s') as kiszallitas 
+        FROM rendeles WHERE id = ?
+    `;
+
+    connection.query(sql, [id], (err, orderResult) => {
         if (err || orderResult.length === 0) {
             return res.redirect(APP_PATH + '/admin');
         }
