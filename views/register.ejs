@@ -1,0 +1,14 @@
+<%- include('header') %>
+    <h2>Regisztráció</h2>
+    <form action="/register" method="POST" style="max-width: 400px;">
+        <div class="form-group">
+            <label>Felhasználónév:</label>
+            <input type="text" name="username" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label>Jelszó:</label>
+            <input type="password" name="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Regisztráció</button>
+    </form>
+<%- include('footer') %>

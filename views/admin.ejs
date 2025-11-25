@@ -1,0 +1,16 @@
+<%- include('header') %>
+    <div class="card border-danger">
+        <div class="card-header bg-danger text-white">ADMIN FELÜLET</div>
+        <div class="card-body">
+            <h4>Regisztrált felhasználók listája:</h4>
+            <ul class="list-group">
+                <% users.forEach(function(user) { %>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <%= user.username %> 
+                        <% if(user.isAdmin) { %> <span class="badge badge-danger">Admin</span> <% } %>
+                    </li>
+                <% }); %>
+            </ul>
+        </div>
+    </div>
+<%- include('footer') %>

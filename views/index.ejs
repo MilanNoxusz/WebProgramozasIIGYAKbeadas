@@ -1,0 +1,13 @@
+<%- include('header') %>
+    <div class="jumbotron">
+        <h1>Üdvözöllek az oldalon!</h1>
+        <p>Ez a nyilvános felület, amit mindenki lát.</p>
+        
+        <% if (!isAuthenticated) { %>
+            <p>Kérlek jelentkezz be a további funkciókhoz!</p>
+            <a href="/login" class="btn btn-primary">Belépés</a>
+        <% } else { %>
+            <p>Örülünk, hogy újra itt vagy!</p>
+        <% } %>
+    </div>
+<%- include('footer') %>
