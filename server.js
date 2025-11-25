@@ -137,6 +137,37 @@ app.get('/offers', (req, res) => {
     });
 });
 
+app.post('/messages', checkAuth, (req, res) => {
+    // A felhasználó neve a session-ből jön (Passport)
+    const username = req.user.username;
+    // Az üzenet szövege az űrlapból
+    const message = req.body.message;
+
+    const sql = "INSERT INTO messages (username, message) VALUES (?, ?)";
+
+    connection.query(sql, [username, message], (err) => {
+        if (err) console.log("Hiba az üzenet mentésekor:", err);
+
+        // Visszairányítjuk az oldalra, hogy lássa az új üzenetet
+        res.redirect(APP_PATH + '/messages');
+    });
+});
+
+app.get('/messages', checkAuth, (req, res) => {
+    // Lekérjük az üzeneteket, a legújabbal kezdve
+    const sql = "SELECT * FROM messages ORDER BY created_at DESC";
+
+    connection.query(sql, (err, results) => {
+        if (err) {
+            console.log("Hiba az üzenetek betöltésekor:", err);
+            results = []; // Ha hiba van, üres listát adunk
+        }
+
+        // Rendereljük az oldalt, átadva az üzeneteket
+        res.render('messages', { messages: results });
+    });
+});
+
 app.get('/register', (req, res) => {
     res.render('register');
 });
@@ -181,3 +212,4 @@ app.listen(PORT, () => {
     console.log(`A szerver fut a ${PORT}-es porton.`);
     console.log(`Elérhető : http://143.47.98.96${APP_PATH}`);
 });
+

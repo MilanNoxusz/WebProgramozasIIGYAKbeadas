@@ -1,7 +1,96 @@
 <%- include('header') %>
-    <div class="alert alert-info">
-        <h3>Üzenetek</h3>
-        <p>Ezt az oldalt csak a <strong>Regisztrált látogatók</strong> (és adminok) láthatják.</p>
-        <p>Itt lehetne pl. asztalfoglalást leadni.</p>
+
+<style>
+    /* Egyedi stílus az üzenetekhez */
+    .msg-card {
+        background-color: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 15px;
+        border-left: 5px solid #ffbe33; /* Feane sárga csík */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .msg-header {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+    }
+    .msg-user {
+        font-weight: bold;
+        color: #222831;
+    }
+    .msg-time {
+        font-size: 0.8rem;
+        color: #666;
+    }
+    .msg-body {
+        font-size: 1.1rem;
+        line-height: 1.5;
+    }
+    .form-container {
+        background: #222831;
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+    }
+</style>
+
+<section class="layout_padding">
+    <div class="container">
+        <div class="heading_container heading_center mb-5">
+            <h2>Vendégkönyv & Üzenetek</h2>
+            <p>Oszd meg velünk a véleményed, vagy kérdezz Dantétól!</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="form-container">
+                    <h3><i class="fa fa-envelope"></i> Új üzenet</h3>
+                    <p>Szia, <strong><%= currentUser.username %></strong>!</p>
+                    
+                    <form action="<%= appPath %>/messages" method="POST">
+                        <div class="form-group">
+                            <label for="message">Üzeneted:</label>
+                            <textarea class="form-control" id="message" name="message" rows="5" required placeholder="Írd ide a véleményed..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-warning btn-block" style="color: white; font-weight: bold;">
+                            Küldés <i class="fa fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <h3 class="mb-4">Mit mondtak mások?</h3>
+                
+                <% if (messages.length === 0) { %>
+                    <div class="alert alert-info">
+                        Még nem érkezett üzenet. Legyél te az első!
+                    </div>
+                <% } else { %>
+                    
+                    <% messages.forEach(function(msg) { %>
+                        <div class="msg-card">
+                            <div class="msg-header">
+                                <span class="msg-user">
+                                    <i class="fa fa-user-circle"></i> <%= msg.username %>
+                                </span>
+                                <span class="msg-time">
+                                    <%= new Date(msg.created_at).toLocaleString('hu-HU') %>
+                                </span>
+                            </div>
+                            <div class="msg-body">
+                                <%= msg.message %>
+                            </div>
+                        </div>
+                    <% }); %>
+
+                <% } %>
+            </div>
+        </div>
     </div>
+</section>
+
 <%- include('footer') %>
